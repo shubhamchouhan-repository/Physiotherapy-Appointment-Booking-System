@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+    <fullyQualifiedTypeName name="lombok.Data"/>
+    <fullyQualifiedTypeName name="com.example.PhysiotherapyAppointmentBooking.entity.AppointmentSlot"/>
+    <fullyQualifiedTypeName name="lombok.Builder"/>
+    <fullyQualifiedTypeName name="com.example.PhysiotherapyAppointmentBooking.entity.Appointment"/>
+    <fullyQualifiedTypeName name="com.example.PhysiotherapyAppointmentBooking.security.JwtRequestFilter"/>
+    <fullyQualifiedTypeName name="com.example.PhysiotherapyAppointmentBooking.repository.UserRepository"/>
+    <fullyQualifiedTypeName name="com.example.PhysiotherapyAppointmentBooking.entity.User"/>
+    <fullyQualifiedTypeName name="org.springframework.scheduling.annotation.EnableAsync"/>
+</qualifiedTypeNameHistroy>

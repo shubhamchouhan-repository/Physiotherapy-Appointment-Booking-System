@@ -1,0 +1,219 @@
+package com.example.PhysiotherapyAppointmentBooking.service;
+
+import com.example.PhysiotherapyAppointmentBooking.dto.AppointmentDto.*;
+import com.example.PhysiotherapyAppointmentBooking.entity.Appointment;
+import com.example.PhysiotherapyAppointmentBooking.entity.AppointmentSlot;
+import com.example.PhysiotherapyAppointmentBooking.entity.User;
+import com.example.PhysiotherapyAppointmentBooking.repository.AppointmentRepository;
+import com.example.PhysiotherapyAppointmentBooking.repository.AppointmentSlotRepository;
+import com.example.PhysiotherapyAppointmentBooking.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class AppointmentService {
+
+    @Autowired private UserRepository userRepository;
+    @Autowired private AppointmentSlotRepository slotRepository;
+    @Autowired private AppointmentRepository appointmentRepository;
+    @Autowired private EmailService emailService;
+
+    public List<PhysiotherapistResponse> getAllPhysiotherapists() {
+        return userRepository.findByRole(User.Role.PHYSIOTHERAPIST)
+                .stream().map(this::toPhysioResponse).collect(Collectors.toList());
+    }
+
+    public PhysiotherapistResponse getPhysiotherapistById(Long id) {
+        User physio = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Physiotherapist not found"));
+        return toPhysioResponse(physio);
+    }
+
+    public List<SlotResponse> getAvailableSlots(Long physioId, LocalDate date) {
+        User physio = userRepository.findById(physioId)
+                .orElseThrow(() -> new RuntimeException("Physiotherapist not found"));
+        return slotRepository.findByPhysiotherapistAndDateAndStatusOrderByStartTime(
+                physio, date, AppointmentSlot.SlotStatus.AVAILABLE)
+                .stream().map(this::toSlotResponse).collect(Collectors.toList());
+    }
+
+    public List<SlotResponse> getAllSlotsForPhysio(Long physioId, LocalDate date) {
+        User physio = userRepository.findById(physioId)
+                .orElseThrow(() -> new RuntimeException("Physiotherapist not found"));
+        return slotRepository.findByPhysiotherapistAndDateOrderBySlotOrder(physio, date)
+                .stream().map(this::toSlotResponse).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public AppointmentResponse bookAppointment(Long patientId, BookAppointmentRequest request) {
+        User patient = userRepository.findById(patientId)
+                .orElseThrow(() -> new RuntimeException("Patient not found"));
+
+        AppointmentSlot slot = slotRepository.findById(request.getSlotId())
+                .orElseThrow(() -> new RuntimeException("Slot not found"));
+
+        if (slot.getStatus() != AppointmentSlot.SlotStatus.AVAILABLE) {
+            throw new RuntimeException("Slot is not available");
+        }
+
+        slot.setStatus(AppointmentSlot.SlotStatus.BOOKED);
+        slotRepository.save(slot);
+
+        Appointment appointment = Appointment.builder()
+                .patient(patient)
+                .physiotherapist(slot.getPhysiotherapist())
+                .slot(slot)
+                .status(Appointment.AppointmentStatus.CONFIRMED)
+                .amountPaid(request.getAmountPaid())
+                .paymentTransactionId(request.getPaymentTransactionId())
+                .paymentStatus(Appointment.PaymentStatus.SUCCESS)
+                .build();
+        appointment = appointmentRepository.save(appointment);
+
+        // Send emails
+        DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("dd MMM yyyy");
+        DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("hh:mm a");
+        String dateStr = slot.getDate().format(dateFmt);
+        String timeStr = slot.getStartTime().format(timeFmt);
+
+        emailService.sendAppointmentConfirmationToPatient(
+                patient.getEmail(), patient.getName(),
+                slot.getPhysiotherapist().getName(), dateStr, timeStr,
+                request.getAmountPaid() != null ? request.getAmountPaid() : 0);
+
+        emailService.sendAppointmentNotificationToPhysio(
+                slot.getPhysiotherapist().getEmail(),
+                slot.getPhysiotherapist().getName(),
+                patient.getName(), dateStr, timeStr);
+
+        return toAppointmentResponse(appointment);
+    }
+
+    public List<AppointmentResponse> getUpcomingAppointments(Long patientId) {
+        User patient = userRepository.findById(patientId)
+                .orElseThrow(() -> new RuntimeException("Patient not found"));
+        return appointmentRepository.findUpcomingByPatient(patient, LocalDate.now())
+                .stream().map(this::toAppointmentResponse).collect(Collectors.toList());
+    }
+
+    public List<AppointmentResponse> getTodayAppointmentsForPhysio(Long physioId) {
+        User physio = userRepository.findById(physioId)
+                .orElseThrow(() -> new RuntimeException("Physiotherapist not found"));
+        return appointmentRepository.findByPhysioAndDate(physio, LocalDate.now())
+                .stream().map(this::toAppointmentResponse).collect(Collectors.toList());
+    }
+
+    public List<AppointmentResponse> getAppointmentsForPhysioByDate(Long physioId, LocalDate date) {
+        User physio = userRepository.findById(physioId)
+                .orElseThrow(() -> new RuntimeException("Physiotherapist not found"));
+        return appointmentRepository.findByPhysioAndDate(physio, date)
+                .stream().map(this::toAppointmentResponse).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<SlotResponse> createSlots(Long physioId, CreateSlotsRequest request) {
+        User physio = userRepository.findById(physioId)
+                .orElseThrow(() -> new RuntimeException("Physiotherapist not found"));
+
+        List<AppointmentSlot> existingSlots = slotRepository
+                .findByPhysiotherapistAndDateOrderBySlotOrder(physio, request.getDate());
+        existingSlots.stream()
+                .filter(s -> s.getStatus() == AppointmentSlot.SlotStatus.AVAILABLE)
+                .forEach(slotRepository::delete);
+
+        List<AppointmentSlot> newSlots = new ArrayList<>();
+        LocalTime current = request.getStartTime();
+        int order = 1;
+
+        while (current.plusMinutes(request.getDurationMinutes()).compareTo(request.getEndTime()) <= 0) {
+            AppointmentSlot slot = AppointmentSlot.builder()
+                    .physiotherapist(physio)
+                    .date(request.getDate())
+                    .startTime(current)
+                    .endTime(current.plusMinutes(request.getDurationMinutes()))
+                    .status(AppointmentSlot.SlotStatus.AVAILABLE)
+                    .slotOrder(order++)
+                    .build();
+            newSlots.add(slotRepository.save(slot));
+            current = current.plusMinutes(request.getDurationMinutes());
+        }
+
+        return newSlots.stream().map(this::toSlotResponse).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<AppointmentResponse> reorderAppointments(Long physioId, UpdateSlotOrderRequest request) {
+        User physio = userRepository.findById(physioId)
+                .orElseThrow(() -> new RuntimeException("Physiotherapist not found"));
+
+        List<AppointmentResponse> reordered = new ArrayList<>();
+        for (int i = 0; i < request.getSlotIds().size(); i++) {
+            AppointmentSlot slot = slotRepository.findById(request.getSlotIds().get(i))
+                    .orElseThrow(() -> new RuntimeException("Slot not found"));
+            slot.setSlotOrder(i + 1);
+            slotRepository.save(slot);
+        }
+
+        return getAppointmentsForPhysioByDate(physioId, LocalDate.now());
+    }
+
+    @Transactional
+    public SlotResponse updateSlotStatus(Long slotId, AppointmentSlot.SlotStatus status) {
+        AppointmentSlot slot = slotRepository.findById(slotId)
+                .orElseThrow(() -> new RuntimeException("Slot not found"));
+        slot.setStatus(status);
+        return toSlotResponse(slotRepository.save(slot));
+    }
+
+    private PhysiotherapistResponse toPhysioResponse(User user) {
+        return PhysiotherapistResponse.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .specialization(user.getSpecialization())
+                .qualification(user.getQualification())
+                .clinicAddress(user.getClinicAddress())
+                .feesPerAppointment(user.getFeesPerAppointment())
+                .contactNumber(user.getContactNumber())
+                .email(user.getEmail())
+                .build();
+    }
+
+    private SlotResponse toSlotResponse(AppointmentSlot slot) {
+        return SlotResponse.builder()
+                .id(slot.getId())
+                .date(slot.getDate())
+                .startTime(slot.getStartTime())
+                .endTime(slot.getEndTime())
+                .status(slot.getStatus())
+                .slotOrder(slot.getSlotOrder())
+                .build();
+    }
+
+    private AppointmentResponse toAppointmentResponse(Appointment appointment) {
+        AppointmentSlot slot = appointment.getSlot();
+        return AppointmentResponse.builder()
+                .id(appointment.getId())
+                .patientId(appointment.getPatient().getId())
+                .patientName(appointment.getPatient().getName())
+                .physiotherapistId(appointment.getPhysiotherapist().getId())
+                .physiotherapistName(appointment.getPhysiotherapist().getName())
+                .physiotherapistSpecialization(appointment.getPhysiotherapist().getSpecialization())
+                .date(slot.getDate())
+                .startTime(slot.getStartTime())
+                .endTime(slot.getEndTime())
+                .status(appointment.getStatus())
+                .paymentStatus(appointment.getPaymentStatus())
+                .amountPaid(appointment.getAmountPaid())
+                .paymentTransactionId(appointment.getPaymentTransactionId())
+                .slotOrder(slot.getSlotOrder())
+                .build();
+    }
+}

@@ -1,0 +1,5 @@
+package com.example.PhysiotherapyAppointmentBooking.repository;
+
+public interface AppointmentSlotRepository {
+
+}

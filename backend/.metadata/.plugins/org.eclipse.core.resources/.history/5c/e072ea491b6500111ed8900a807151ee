@@ -1,0 +1,5 @@
+package com.example.PhysiotherapyAppointmentBooking.dto;
+
+public class AppointmentDto {
+
+}

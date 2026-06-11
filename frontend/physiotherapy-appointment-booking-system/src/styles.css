@@ -1,0 +1,627 @@
+/* PhysioBook Design System */
+:root {
+  --teal-900: #0f4c5c;
+  --teal-700: #1a6b80;
+  --teal-500: #2a9db5;
+  --teal-200: #a8dce8;
+  --teal-50:  #f0f9fc;
+  --sand-100: #faf8f5;
+  --sand-200: #f0ece4;
+  --slate-700: #334155;
+  --slate-500: #64748b;
+  --slate-300: #cbd5e1;
+  --slate-100: #f1f5f9;
+  --green-500: #22c55e;
+  --green-100: #dcfce7;
+  --red-500: #ef4444;
+  --red-100: #fee2e2;
+  --amber-500: #f59e0b;
+  --amber-100: #fef3c7;
+  --white: #ffffff;
+  --font-display: 'Georgia', serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 16px rgba(15,76,92,0.12);
+  --shadow-lg: 0 8px 32px rgba(15,76,92,0.18);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 20px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--sand-100);
+  color: var(--slate-700);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Layout */
+.app-header {
+  background: var(--white);
+  border-bottom: 1px solid var(--slate-300);
+  padding: 0 2rem;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+
+.logo {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--teal-900);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.logo span { color: var(--teal-500); }
+
+.header-actions { display: flex; align-items: center; gap: 1rem; }
+
+.page-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+/* Cards */
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--slate-300);
+  padding: 1.5rem;
+}
+
+.card-header {
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--slate-100);
+}
+
+.card-header h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--teal-900);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  text-decoration: none;
+  font-family: var(--font-body);
+}
+
+.btn-primary {
+  background: var(--teal-700);
+  color: var(--white);
+}
+.btn-primary:hover { background: var(--teal-900); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+
+.btn-outline {
+  background: transparent;
+  border: 1.5px solid var(--teal-700);
+  color: var(--teal-700);
+}
+.btn-outline:hover { background: var(--teal-50); }
+
+.btn-danger { background: var(--red-500); color: var(--white); }
+.btn-danger:hover { background: #dc2626; }
+
+.btn-ghost { background: transparent; color: var(--slate-500); }
+.btn-ghost:hover { background: var(--slate-100); color: var(--slate-700); }
+
+.btn-sm { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+.btn-lg { padding: 0.85rem 2rem; font-size: 1rem; }
+
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+
+/* Forms */
+.form-group {
+  margin-bottom: 1.1rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--slate-700);
+  margin-bottom: 0.4rem;
+}
+
+.form-input, .form-select {
+  width: 100%;
+  padding: 0.65rem 0.9rem;
+  border: 1.5px solid var(--slate-300);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-family: var(--font-body);
+  color: var(--slate-700);
+  background: var(--white);
+  transition: border-color 0.15s;
+  outline: none;
+}
+
+.form-input:focus, .form-select:focus {
+  border-color: var(--teal-500);
+  box-shadow: 0 0 0 3px rgba(42, 157, 181, 0.12);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-error {
+  font-size: 0.8rem;
+  color: var(--red-500);
+  margin-top: 0.3rem;
+}
+
+/* Landing page */
+.landing {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--teal-900) 0%, var(--teal-700) 50%, var(--teal-500) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+.landing-hero {
+  color: var(--white);
+  margin-bottom: 3rem;
+}
+
+.landing-hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: 1rem;
+}
+
+.landing-hero h1 em {
+  font-style: italic;
+  color: var(--teal-200);
+}
+
+.landing-hero p {
+  font-size: 1.15rem;
+  opacity: 0.85;
+  max-width: 480px;
+  margin: 0 auto 2rem;
+}
+
+.landing-cta {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.landing-cta .btn {
+  padding: 0.9rem 2.5rem;
+  font-size: 1rem;
+  border-radius: 100px;
+}
+
+.landing-cards {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 3rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.landing-feature {
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  color: white;
+  width: 200px;
+  text-align: center;
+}
+
+.landing-feature .icon { font-size: 2rem; margin-bottom: 0.5rem; }
+.landing-feature h3 { font-size: 0.95rem; font-weight: 600; }
+
+/* Auth pages */
+.auth-page {
+  min-height: 100vh;
+  background: var(--sand-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.auth-container {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 520px;
+  padding: 2.5rem;
+}
+
+.auth-logo {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.auth-logo h1 {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  color: var(--teal-900);
+}
+
+.auth-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--teal-900);
+  margin-bottom: 0.5rem;
+}
+
+.auth-subtitle {
+  font-size: 0.9rem;
+  color: var(--slate-500);
+  margin-bottom: 1.75rem;
+}
+
+.role-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.role-card {
+  border: 2px solid var(--slate-300);
+  border-radius: var(--radius);
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  background: var(--white);
+}
+
+.role-card:hover { border-color: var(--teal-500); background: var(--teal-50); }
+.role-card.active { border-color: var(--teal-700); background: var(--teal-50); }
+.role-card .role-icon { font-size: 2rem; margin-bottom: 0.4rem; }
+.role-card h3 { font-size: 0.95rem; font-weight: 600; color: var(--teal-900); }
+.role-card p { font-size: 0.78rem; color: var(--slate-500); margin-top: 0.2rem; }
+
+.auth-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.88rem;
+  color: var(--slate-500);
+}
+
+.auth-footer a { color: var(--teal-700); text-decoration: none; font-weight: 500; }
+.auth-footer a:hover { text-decoration: underline; }
+
+/* Dashboard tabs */
+.dashboard-tabs {
+  display: flex;
+  gap: 0.25rem;
+  background: var(--slate-100);
+  padding: 0.3rem;
+  border-radius: var(--radius);
+  margin-bottom: 1.75rem;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 0.6rem 1rem;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--slate-500);
+  transition: all 0.15s;
+  font-family: var(--font-body);
+}
+
+.tab-btn.active {
+  background: var(--white);
+  color: var(--teal-900);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Physio card */
+.physio-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem;
+}
+
+.physio-card {
+  background: var(--white);
+  border: 1.5px solid var(--slate-300);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.18s;
+  position: relative;
+  overflow: hidden;
+}
+
+.physio-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--teal-500), var(--teal-700));
+}
+
+.physio-card:hover { border-color: var(--teal-500); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+
+.physio-avatar {
+  width: 56px; height: 56px;
+  background: linear-gradient(135deg, var(--teal-200), var(--teal-500));
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  color: var(--teal-900);
+}
+
+.physio-name { font-size: 1.05rem; font-weight: 600; color: var(--teal-900); margin-bottom: 0.25rem; }
+.physio-spec {
+  font-size: 0.82rem;
+  color: var(--teal-700);
+  background: var(--teal-50);
+  border: 1px solid var(--teal-200);
+  border-radius: 100px;
+  padding: 0.2rem 0.6rem;
+  display: inline-block;
+  margin-bottom: 0.75rem;
+}
+.physio-fee {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--teal-900);
+}
+.physio-fee span { font-size: 0.8rem; font-weight: 400; color: var(--slate-500); }
+
+/* Slot grid */
+.slot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.75rem;
+}
+
+.slot-chip {
+  padding: 0.65rem 0.5rem;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--slate-300);
+  background: var(--white);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--slate-700);
+  font-family: var(--font-body);
+}
+
+.slot-chip:hover:not(:disabled) { border-color: var(--teal-500); background: var(--teal-50); color: var(--teal-900); }
+.slot-chip.selected { border-color: var(--teal-700); background: var(--teal-700); color: var(--white); }
+.slot-chip.booked { opacity: 0.4; cursor: not-allowed; text-decoration: line-through; }
+.slot-chip.blocked { background: var(--slate-100); opacity: 0.5; cursor: not-allowed; }
+
+/* Payment modal */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(15,76,92,0.4);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  padding: 1rem;
+}
+
+.modal {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 460px;
+  padding: 2rem;
+}
+
+.modal-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--teal-900);
+  margin-bottom: 1.25rem;
+}
+
+.payment-summary {
+  background: var(--teal-50);
+  border: 1px solid var(--teal-200);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.payment-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.88rem;
+  padding: 0.3rem 0;
+  color: var(--slate-700);
+}
+
+.payment-row.total {
+  border-top: 1px solid var(--teal-200);
+  padding-top: 0.6rem;
+  margin-top: 0.3rem;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--teal-900);
+}
+
+/* Status badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 100px;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.badge-success { background: var(--green-100); color: #15803d; }
+.badge-warning { background: var(--amber-100); color: #92400e; }
+.badge-danger  { background: var(--red-100); color: #b91c1c; }
+.badge-info    { background: var(--teal-50); color: var(--teal-700); border: 1px solid var(--teal-200); }
+
+/* Appointment list item */
+.appointment-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--white);
+  border: 1px solid var(--slate-300);
+  border-radius: var(--radius);
+  margin-bottom: 0.75rem;
+  transition: box-shadow 0.15s;
+}
+
+.appointment-item:hover { box-shadow: var(--shadow-sm); }
+
+.appt-date-block {
+  background: var(--teal-50);
+  border: 1px solid var(--teal-200);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.75rem;
+  text-align: center;
+  min-width: 60px;
+}
+
+.appt-date-day { font-size: 1.3rem; font-weight: 700; color: var(--teal-900); line-height: 1; }
+.appt-date-month { font-size: 0.72rem; color: var(--teal-700); text-transform: uppercase; letter-spacing: 0.05em; }
+
+.appt-info { flex: 1; }
+.appt-physio { font-weight: 600; color: var(--slate-700); font-size: 0.95rem; }
+.appt-time { font-size: 0.82rem; color: var(--slate-500); margin-top: 0.15rem; }
+.appt-amount { font-size: 0.9rem; font-weight: 600; color: var(--teal-700); }
+
+/* Physio dashboard */
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.schedule-table th {
+  text-align: left;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--slate-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 2px solid var(--slate-300);
+}
+
+.schedule-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--slate-100);
+  font-size: 0.88rem;
+  vertical-align: middle;
+}
+
+.schedule-table tr:last-child td { border-bottom: none; }
+.schedule-table tr:hover td { background: var(--teal-50); }
+
+/* Drag handle */
+.drag-handle {
+  cursor: grab;
+  color: var(--slate-300);
+  font-size: 1.2rem;
+  padding: 0 0.3rem;
+  user-select: none;
+}
+
+.drag-handle:active { cursor: grabbing; }
+
+/* Misc */
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--teal-900);
+  margin-bottom: 1rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--slate-500);
+}
+
+.empty-state .empty-icon { font-size: 3rem; margin-bottom: 0.75rem; }
+.empty-state h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--slate-700); }
+.empty-state p { font-size: 0.88rem; }
+
+.divider { height: 1px; background: var(--slate-300); margin: 1.5rem 0; }
+
+.loading-screen {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+}
+
+.spinner {
+  width: 40px; height: 40px;
+  border: 3px solid var(--teal-200);
+  border-top-color: var(--teal-700);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.alert {
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  margin-bottom: 1rem;
+}
+
+.alert-success { background: var(--green-100); color: #15803d; border: 1px solid #86efac; }
+.alert-error { background: var(--red-100); color: #b91c1c; border: 1px solid #fca5a5; }
+.alert-info { background: var(--teal-50); color: var(--teal-700); border: 1px solid var(--teal-200); }
+
+@media (max-width: 640px) {
+  .form-row { grid-template-columns: 1fr; }
+  .physio-grid { grid-template-columns: 1fr; }
+  .slot-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+  .landing-hero h1 { font-size: 2.2rem; }
+  .auth-container { padding: 1.75rem; }
+}

@@ -1,0 +1,13 @@
+package com.example.PhysiotherapyAppointmentBooking;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class PhysiotherapyAppointmentBookingApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(PhysiotherapyAppointmentBookingApplication.class, args);
+	}
+
+}
